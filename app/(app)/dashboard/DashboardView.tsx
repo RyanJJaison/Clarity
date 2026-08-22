@@ -20,6 +20,7 @@ import { CourseCard } from "@/components/cards/CourseCard";
 import { RecommendationCard } from "@/components/cards/RecommendationCard";
 import { ProgressCard } from "@/components/cards/ProgressCard";
 import { AIToolCard } from "@/components/cards/AIToolCard";
+import { ClassroomScene } from "@/components/classroom/ClassroomScene";
 import type { ActivityItem, Recommendation } from "@/lib/dashboard-data";
 
 export interface CourseRow {
@@ -95,8 +96,10 @@ export function DashboardView({
         </div>
       </Reveal>
 
+      <ClassroomScene courses={courses} />
+
       {/* Today's Focus — the single most important next action, derived from real signals only. */}
-      <Reveal tier="content">
+      <Reveal id="today-focus" tier="content" className="scroll-mt-[calc(var(--nav-height)+1.5rem)]">
         <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
           <CardContent className="flex flex-col sm:flex-row sm:items-center gap-4 pt-6">
             <div className="flex-1">

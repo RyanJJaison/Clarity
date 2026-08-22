@@ -9,12 +9,13 @@ import {
   TrophyIcon,
   type LucideIcon,
 } from "lucide-react";
-import type { Mode } from "@/types/db";
-
 export interface CourseSummary {
   id: string;
   title: string;
-  mode: Mode;
+  // Loose string, matching CourseRow elsewhere in the app (courses come
+  // from an untyped Supabase client — see lib/supabase/server.ts) rather
+  // than the stricter `Mode` union, which would need a cast at every call site.
+  mode: string;
 }
 
 export interface NavItem {
