@@ -10,6 +10,9 @@
 export interface MasteryRow {
   course_id: string;
   concept_tag: string;
+  /** "overall" for exact/ai_boolean-graded concepts; a named rubric dimension
+   *  (e.g. "recall", "analysis") for ai_rubric-graded ones. */
+  dimension: string;
   mastery_score: number;
 }
 
@@ -119,10 +122,13 @@ export function buildRecommendations(params: {
   const weakest = [...mastery].sort((a, b) => a.mastery_score - b.mastery_score)[0];
   if (weakest && weakest.mastery_score < 0.6) {
     const course = courses.find((c) => c.id === weakest.course_id);
+    const isSpecificDimension = weakest.dimension !== "overall";
     recs.push({
       id: "weak-concept",
-      title: `Review ${weakest.concept_tag}`,
-      reason: `Your recent quiz results suggest this topic needs more practice — ${Math.round(weakest.mastery_score * 100)}% mastery so far.`,
+      title: isSpecificDimension ? `Review ${weakest.concept_tag} (${weakest.dimension})` : `Review ${weakest.concept_tag}`,
+      reason: isSpecificDimension
+        ? `Your recent work on this topic shows ${weakest.dimension} specifically needs more practice — ${Math.round(weakest.mastery_score * 100)}% so far, even where other dimensions are stronger.`
+        : `Your recent quiz results suggest this topic needs more practice — ${Math.round(weakest.mastery_score * 100)}% mastery so far.`,
       href: course ? `/tutor/${course.id}` : "/dashboard",
     });
   }

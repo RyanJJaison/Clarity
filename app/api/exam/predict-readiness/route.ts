@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const { data: mastery } = await supabase
     .from("mastery")
-    .select("concept_tag, mastery_score")
+    .select("concept_tag, dimension, mastery_score")
     .eq("user_id", user.id)
     .eq("course_id", courseId);
 

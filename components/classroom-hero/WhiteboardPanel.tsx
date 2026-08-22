@@ -2,18 +2,20 @@ import { GlassPanel } from "@/components/ui/glass-panel";
 import { InteractiveHotspot } from "./InteractiveHotspot";
 import { rectToPositionPercent } from "./backgroundCrop";
 
-interface WhiteboardPanelProps {
+type WhiteboardPanelProps = {
   title: string;
   detail: string;
-  href: string;
-}
+} & ({ href: string; onActivate?: never } | { href?: never; onActivate: () => void });
 
 const POSITION = rectToPositionPercent({ x: 310, y: 115, w: 600, h: 320 });
 
-/** The whiteboard — Today's Focus. Primary interaction per the enhancement spec (Section 4). */
-export function WhiteboardPanel({ title, detail, href }: WhiteboardPanelProps) {
+/** The whiteboard — Today's Focus. Primary interaction per the enhancement spec (Section 4).
+ * With no course yet, `onActivate` opens the zoom-in "what are you studying?" panel in
+ * place instead of navigating away; once there's a focus course, `href` deep-links to it. */
+export function WhiteboardPanel({ title, detail, href, onActivate }: WhiteboardPanelProps) {
+  const hotspotProps = href ? { href } : { onActivate: onActivate! };
   return (
-    <InteractiveHotspot href={href} label={`Whiteboard — Today's Focus: ${title}`} tooltip="TODAY'S FOCUS" position={POSITION}>
+    <InteractiveHotspot {...hotspotProps} label={`Whiteboard — Today's Focus: ${title}`} tooltip="TODAY'S FOCUS" position={POSITION}>
       <GlassPanel className="flex h-full w-full flex-col justify-center gap-3 p-8">
         <div className="flex items-center justify-between">
           <p className="font-editorial italic text-[28px] text-foreground leading-tight truncate pr-4">{title}</p>

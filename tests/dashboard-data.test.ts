@@ -39,9 +39,9 @@ describe("buildRecentActivity", () => {
 describe("courseProgress", () => {
   it("averages mastery scores per course", () => {
     const mastery = [
-      { course_id: "c1", concept_tag: "a", mastery_score: 0.8 },
-      { course_id: "c1", concept_tag: "b", mastery_score: 0.4 },
-      { course_id: "c2", concept_tag: "c", mastery_score: 1 },
+      { course_id: "c1", concept_tag: "a", dimension: "overall", mastery_score: 0.8 },
+      { course_id: "c1", concept_tag: "b", dimension: "overall", mastery_score: 0.4 },
+      { course_id: "c2", concept_tag: "c", dimension: "overall", mastery_score: 1 },
     ];
     const result = courseProgress(mastery);
     expect(result.get("c1")).toBeCloseTo(0.6);
@@ -81,7 +81,7 @@ describe("hasRecentActivity", () => {
 describe("buildRecommendations", () => {
   it("recommends the weakest concept when mastery is low", () => {
     const recs = buildRecommendations({
-      mastery: [{ course_id: "c1", concept_tag: "Vectors", mastery_score: 0.3 }],
+      mastery: [{ course_id: "c1", concept_tag: "Vectors", dimension: "overall", mastery_score: 0.3 }],
       courses: [{ id: "c1", title: "Physics", mode: "general" }],
       dueCount: 0,
       recentActivity: true,
@@ -89,9 +89,24 @@ describe("buildRecommendations", () => {
     expect(recs.some((r) => r.id === "weak-concept" && r.title.includes("Vectors"))).toBe(true);
   });
 
+  it("names the specific rubric dimension when the weak signal isn't 'overall'", () => {
+    const recs = buildRecommendations({
+      mastery: [
+        { course_id: "c1", concept_tag: "WWI causes", dimension: "recall", mastery_score: 0.9 },
+        { course_id: "c1", concept_tag: "WWI causes", dimension: "analysis", mastery_score: 0.35 },
+      ],
+      courses: [{ id: "c1", title: "History", mode: "general" }],
+      dueCount: 0,
+      recentActivity: true,
+    });
+    const rec = recs.find((r) => r.id === "weak-concept");
+    expect(rec?.title).toContain("analysis");
+    expect(rec?.reason).toContain("analysis");
+  });
+
   it("does not recommend a concept that's already well mastered", () => {
     const recs = buildRecommendations({
-      mastery: [{ course_id: "c1", concept_tag: "Vectors", mastery_score: 0.9 }],
+      mastery: [{ course_id: "c1", concept_tag: "Vectors", dimension: "overall", mastery_score: 0.9 }],
       courses: [{ id: "c1", title: "Physics", mode: "general" }],
       dueCount: 0,
       recentActivity: true,
@@ -106,7 +121,7 @@ describe("buildRecommendations", () => {
 
   it("caps at 3 recommendations", () => {
     const recs = buildRecommendations({
-      mastery: [{ course_id: "c1", concept_tag: "Vectors", mastery_score: 0.1 }],
+      mastery: [{ course_id: "c1", concept_tag: "Vectors", dimension: "overall", mastery_score: 0.1 }],
       courses: [{ id: "c1", title: "Physics", mode: "general" }],
       dueCount: 5,
       recentActivity: false,

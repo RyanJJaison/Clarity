@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { complete, MODELS } from "@/lib/anthropic";
 import { quizGenSystemPrompt, quizGenUserPrompt } from "@/lib/prompts/quizGen";
-import type { ItemType } from "@/types/db";
+import type { GradingMode, ItemType } from "@/types/db";
 
 interface GeneratedItem {
   question: string;
@@ -12,6 +12,20 @@ interface GeneratedItem {
   explanation: string;
   conceptTag: string;
   difficulty: number;
+  gradingMode?: GradingMode;
+  rubricDimensions?: string[] | null;
+}
+
+/** Model-assigned gradingMode is trusted where present; this only covers a
+ *  missing/malformed field so every item still has a valid grading strategy. */
+function inferGradingMode(item: GeneratedItem): GradingMode {
+  if (item.gradingMode) return item.gradingMode;
+  if (item.itemType === "mcq") return "exact";
+  if (item.itemType === "teach_back" || item.itemType === "discussion") return "reflection";
+  if (["essay", "source_analysis", "comparative_analysis", "coding_exercise", "mock_exam"].includes(item.itemType)) {
+    return "ai_rubric";
+  }
+  return "ai_boolean";
 }
 
 export async function POST(req: NextRequest) {
@@ -58,6 +72,8 @@ export async function POST(req: NextRequest) {
         explanation: item.explanation,
         concept_tag: item.conceptTag,
         difficulty: item.difficulty,
+        grading_mode: inferGradingMode(item),
+        rubric_dimensions: item.rubricDimensions ?? null,
       }))
     )
     .select();

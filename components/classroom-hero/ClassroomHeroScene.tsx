@@ -8,6 +8,7 @@ import type { ObjectiveSummary } from "@/lib/dashboard-data";
 import { GreetingPanel } from "./GreetingPanel";
 import { ProfilePanel } from "./ProfilePanel";
 import { WhiteboardPanel } from "./WhiteboardPanel";
+import { StudySubjectPanel } from "./StudySubjectPanel";
 import { StatCard } from "./StatCard";
 import { ActiveSubjectPanel } from "./ActiveSubjectPanel";
 import { AskClarityBar } from "./AskClarityBar";
@@ -60,7 +61,10 @@ export function ClassroomHeroScene({
   dueCount,
 }: ClassroomHeroSceneProps) {
   const [lightingMood, setLightingMood] = useState<LightingMood>("morning");
+  const [intakeOpen, setIntakeOpen] = useState(false);
   const { message: eggMessage, show: showEgg } = useEasterEggMessage();
+
+  const hasNoCourseYet = todaysFocus.href === "/courses/new";
 
   const weeklyConsistency = streak > 0 ? Math.min(100, Math.round((streak / 7) * 100)) : 0;
 
@@ -87,8 +91,13 @@ export function ClassroomHeroScene({
         <ProfilePanel email={email} />
       </div>
 
-      {/* Whiteboard — Section 4 */}
-      <WhiteboardPanel title={todaysFocus.title} detail={todaysFocus.detail} href={todaysFocus.href} />
+      {/* Whiteboard — Section 4. No course yet: zoom in to the intake panel in place. */}
+      {hasNoCourseYet ? (
+        <WhiteboardPanel title={todaysFocus.title} detail={todaysFocus.detail} onActivate={() => setIntakeOpen(true)} />
+      ) : (
+        <WhiteboardPanel title={todaysFocus.title} detail={todaysFocus.detail} href={todaysFocus.href} />
+      )}
+      <StudySubjectPanel open={intakeOpen} onOpenChange={setIntakeOpen} />
 
       {/* Left column stats */}
       <StatCard icon={Flame} label="Streak" value={streak} suffix={streak === 1 ? " Day" : " Days"} position={{ x: 36, y: 200, w: 200, h: 100 }} iconClassName="bg-warning/15 text-warning" />

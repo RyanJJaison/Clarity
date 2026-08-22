@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
   const mode: Mode | undefined = body.mode;
   const level: Level = body.level ?? "beginner";
   const title: string | undefined = body.title;
+  const examDate: string | undefined = body.examDate; // "YYYY-MM-DD", optional
 
   if (!sourceId || !mode) {
     return NextResponse.json({ error: "sourceId and mode are required" }, { status: 400 });
@@ -34,7 +35,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Source not found" }, { status: 404 });
   }
 
-  const outline = await generateOutlineWithRetry(source.raw_text ?? "", level);
+  const daysRemaining = examDate
+    ? Math.max(0, Math.ceil((new Date(examDate).getTime() - Date.now()) / 86_400_000))
+    : undefined;
+
+  const outline = await generateOutlineWithRetry(source.raw_text ?? "", level, daysRemaining);
 
   const { data: course, error: courseError } = await supabase
     .from("courses")
@@ -44,6 +49,7 @@ export async function POST(req: NextRequest) {
       mode,
       title: title ?? source.title,
       outline,
+      exam_date: examDate ?? null,
     })
     .select()
     .single();
@@ -55,12 +61,12 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ course });
 }
 
-async function generateOutlineWithRetry(content: string, level: Level): Promise<CourseOutline> {
+async function generateOutlineWithRetry(content: string, level: Level, daysRemaining?: number): Promise<CourseOutline> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const raw = await complete({
       model: MODELS.smart,
       system: outlineSystemPrompt(),
-      prompt: outlineUserPrompt({ level, content }),
+      prompt: outlineUserPrompt({ level, content, daysRemaining }),
       maxTokens: 2048,
     });
     try {

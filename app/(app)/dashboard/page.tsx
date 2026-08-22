@@ -21,7 +21,7 @@ export default async function DashboardPage() {
 
   const { data: mastery } = await supabase
     .from("mastery")
-    .select("course_id, concept_tag, mastery_score")
+    .select("course_id, concept_tag, dimension, mastery_score")
     .eq("user_id", user!.id);
 
   const { count: dueCount } = await supabase
