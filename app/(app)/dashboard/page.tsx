@@ -90,6 +90,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardView
+      email={user!.email ?? ""}
       mastery={mastery ?? []}
       dueCount={dueCount ?? 0}
       streak={streak}

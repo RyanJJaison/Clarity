@@ -23,6 +23,7 @@
   --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading);
+  --font-editorial: var(--font-editorial);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -98,16 +99,20 @@
 
 :root {
   /* --------------------------------------------------------------------
-   * Brand & neutral primitives (light theme)
-   * warm off-white / soft cream / charcoal / muted blue / indigo /
-   * intelligent purple / cyan accent / soft green / warm amber
+   * Brand & neutral primitives (light theme) — matches the finalized
+   * Figma classroom-dashboard design (fileKey cLsuVYh56ZKWNWYUGSeOSv):
+   * warm cream background, indigo primary, cyan accent, navy/slate text.
+   * "primitive-purple" is the primary brand slot's variable name (kept
+   * from before the Figma migration so downstream var(--primitive-purple)
+   * references didn't all need renaming) — it now holds an indigo value,
+   * not purple.
    * -------------------------------------------------------------------- */
-  --primitive-warm-off-white: #fbf9f5;
+  --primitive-warm-off-white: #faf6ee;
   --primitive-soft-cream: #f5f0e6;
-  --primitive-charcoal: #1b1e27;
-  --primitive-muted-blue: #5c7a9e;
+  --primitive-charcoal: #1b2a4a;
+  --primitive-muted-blue: #3a4f7c;
   --primitive-indigo: #4f46e5;
-  --primitive-purple: #7c3aed;
+  --primitive-purple: #6366f1;
   --primitive-cyan: #06b6d4;
   --primitive-green: #2f9e5b;
   --primitive-amber: #d97706;
@@ -121,11 +126,11 @@
   --glass-border: color-mix(in oklch, #ffffff 70%, transparent);
   --glass-blur: 12px;
 
-  /* Text — three tiers. "text-secondary" maps to the `subtle` Tailwind
-     color slot (see @theme inline comment above). */
+  /* Text — three tiers, matching the Figma navy/slate pairing. "text-secondary"
+     maps to the `subtle` Tailwind color slot (see @theme inline comment above). */
   --text-primary: var(--primitive-charcoal);
-  --text-secondary: #454a57;
-  --text-muted: #78756c;
+  --text-secondary: var(--primitive-muted-blue);
+  --text-muted: #7186a3;
 
   /* shadcn-required tokens, sourced from the primitives above */
   --foreground: var(--text-primary);
@@ -137,12 +142,12 @@
   --primary-foreground: #ffffff;
   --secondary: var(--primitive-indigo);
   --secondary-foreground: #ffffff;
-  --muted: #ece7db;
+  --muted: #e2e8f0;
   --muted-foreground: var(--text-muted);
   --accent: var(--primitive-cyan);
   --accent-foreground: #ffffff;
   --destructive: var(--primitive-red);
-  --border: #e6e0d2;
+  --border: #e2e0d5;
   --input: #e6e0d2;
   --ring: var(--primitive-purple);
 
@@ -228,8 +233,8 @@
   --primitive-soft-cream: #f5f0e6;
   --primitive-charcoal: #171b26;
   --primitive-muted-blue: #7fa0c4;
-  --primitive-indigo: #818cf8;
-  --primitive-purple: #a78bfa;
+  --primitive-indigo: #a5b4fc;
+  --primitive-purple: #818cf8;
   --primitive-cyan: #22d3ee;
   --primitive-green: #4ade80;
   --primitive-amber: #fbbf24;
@@ -243,7 +248,7 @@
   --glass-blur: 12px;
 
   --text-primary: var(--primitive-warm-off-white);
-  --text-secondary: #b8c0d0;
+  --text-secondary: #a8b4d1;
   --text-muted: #838ba0;
 
   --foreground: var(--text-primary);

@@ -10,7 +10,7 @@ import { Reveal, StaggerGroup, StaggerItem } from "@/components/motion/Reveal";
 import { CourseCard } from "@/components/cards/CourseCard";
 import { RecommendationCard } from "@/components/cards/RecommendationCard";
 import { AIToolCard } from "@/components/cards/AIToolCard";
-import { ClassroomScene } from "@/components/classroom/ClassroomScene";
+import { ClassroomHeroScene } from "@/components/classroom-hero/ClassroomHeroScene";
 import type { ActivityItem, ObjectiveSummary, Recommendation } from "@/lib/dashboard-data";
 
 export interface CourseRow {
@@ -20,6 +20,7 @@ export interface CourseRow {
 }
 
 interface DashboardViewProps {
+  email: string;
   mastery: MasteryRow[];
   dueCount: number;
   streak: number;
@@ -40,6 +41,7 @@ const AT_A_GLANCE = (dueCount: number, streak: number, courseCount: number) => [
 ];
 
 export function DashboardView({
+  email,
   mastery,
   dueCount,
   streak,
@@ -57,17 +59,19 @@ export function DashboardView({
   return (
     <main className="flex-1 w-full flex flex-col gap-10 pb-16">
       {/* The classroom IS the dashboard — full-width, dominant, first thing seen. */}
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6">
         <Reveal tier="background">
-          <div className="flex items-center justify-between">
-            <h1 className="font-heading text-lg font-semibold text-muted-foreground">Your classroom</h1>
-            <Button size="sm" variant="outline" asChild>
-              <Link href="/courses/new">New course</Link>
-            </Button>
-          </div>
+          <ClassroomHeroScene
+            email={email}
+            courses={courses}
+            todaysFocus={todaysFocus}
+            continueLearning={continueLearning}
+            focusCourse={focusCourse}
+            focusCourseProgress={focusCourse ? (courseProgress[focusCourse.id] ?? null) : null}
+            streak={streak}
+            dueCount={dueCount}
+          />
         </Reveal>
-
-        <ClassroomScene courses={courses} todaysFocus={todaysFocus} continueLearning={continueLearning} />
       </div>
 
       {/* Everything below is secondary reference material, not a second hero. */}
