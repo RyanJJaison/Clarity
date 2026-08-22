@@ -16,6 +16,8 @@ import {
 interface RevealProps {
   children: ReactNode;
   className?: string;
+  /** Forwarded to the underlying element — for anchor/scroll targets (e.g. id="subjects"). */
+  id?: string;
   /** Which entrance plays. Defaults to "fadeUp". */
   variant?: RevealVariantName;
   /** "mount" (default) plays once on mount; "scroll" plays when scrolled into view. */
@@ -33,7 +35,7 @@ interface RevealProps {
  * slide in, or scale in — chosen via `variant` — triggered on mount or on
  * scroll into view. Respects prefers-reduced-motion.
  */
-export function Reveal({ children, className, variant = "fadeUp", trigger = "mount", delay = 0, tier, y }: RevealProps) {
+export function Reveal({ children, className, id, variant = "fadeUp", trigger = "mount", delay = 0, tier, y }: RevealProps) {
   const reduceMotion = useReducedMotion();
   const totalDelay = (tier ? hierarchy[tier] : 0) + delay;
 
@@ -49,7 +51,7 @@ export function Reveal({ children, className, variant = "fadeUp", trigger = "mou
       : { animate: "show" as const };
 
   return (
-    <motion.div className={className} initial={reduceMotion ? false : "hidden"} variants={resolved} {...triggerProps}>
+    <motion.div id={id} className={className} initial={reduceMotion ? false : "hidden"} variants={resolved} {...triggerProps}>
       {children}
     </motion.div>
   );
