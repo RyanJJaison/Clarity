@@ -100,6 +100,19 @@ export const viewport = {
 } as const;
 
 // ---------------------------------------------------------------------------
+// Parallax depth — page-scroll travel ratio per layer tier. A background
+// layer moves at 5% of scroll speed, midground 10%, foreground 15% — keep
+// these small; parallax here is atmosphere, not a game-world effect.
+// ---------------------------------------------------------------------------
+export const parallaxDepth = {
+  background: 0.05,
+  midground: 0.1,
+  foreground: 0.15,
+} as const;
+
+export type ParallaxDepthTier = keyof typeof parallaxDepth;
+
+// ---------------------------------------------------------------------------
 // Precomposed tween transitions — the common case of "duration + standard ease".
 // ---------------------------------------------------------------------------
 export const transition = {

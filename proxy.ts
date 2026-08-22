@@ -1,7 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/onboarding", "/courses", "/tutor", "/exam", "/language", "/review"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/onboarding",
+  "/courses",
+  "/tutor",
+  "/exam",
+  "/language",
+  "/review",
+  "/assignments",
+  "/schedule",
+  "/achievements",
+];
 
 const isProtected = (pathname: string) => PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 

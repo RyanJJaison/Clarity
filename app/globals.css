@@ -189,6 +189,30 @@
   --z-modal: 50;
   --z-toast: 60;
   --z-tooltip: 70;
+
+  /* Layout — the floating navbar's height, referenced by scroll-padding
+     and any content that needs to sit clear of it. */
+  --nav-height: 4rem;
+
+  /* --------------------------------------------------------------------
+   * Classroom scene — decorative tones for the illustrated dashboard
+   * environment (components/classroom/*). Not part of the core semantic
+   * palette; day scene, warm and bright.
+   * -------------------------------------------------------------------- */
+  --classroom-wall-top: #f7f2e7;
+  --classroom-wall-bottom: #ece3d0;
+  --classroom-floor: #ddd0b8;
+  --classroom-sky-top: #bcd6f2;
+  --classroom-sky-bottom: #eaf3fb;
+  --classroom-sun: #ffe9a8;
+  --classroom-wood-light: #d9b385;
+  --classroom-wood-dark: #a97c4f;
+  --classroom-board: #fbfbf8;
+  --classroom-board-frame: #8a6a45;
+  --classroom-cork: #d8b58c;
+  --classroom-metal: #c7cdd6;
+  --classroom-plant: #4f8a5b;
+  --classroom-plant-dark: #386640;
 }
 
 .dark {
@@ -262,6 +286,22 @@
   --shadow-lg-value: 0 12px 24px -6px rgb(0 0 0 / 0.44), 0 4px 8px -4px rgb(0 0 0 / 0.3);
   --shadow-xl-value: 0 24px 48px -12px rgb(0 0 0 / 0.55), 0 8px 16px -8px rgb(0 0 0 / 0.34);
   --shadow-glass-value: 0 8px 32px -8px rgb(0 0 0 / 0.4), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+
+  /* Classroom scene — night variant. Same room, lights on, dark sky. */
+  --classroom-wall-top: #1c2030;
+  --classroom-wall-bottom: #12151f;
+  --classroom-floor: #171a24;
+  --classroom-sky-top: #05070f;
+  --classroom-sky-bottom: #171f36;
+  --classroom-sun: #ffe9a8; /* becomes a warm lamp glow, not a sun */
+  --classroom-wood-light: #6b4e33;
+  --classroom-wood-dark: #4a3521;
+  --classroom-board: #232838;
+  --classroom-board-frame: #4a3521;
+  --classroom-cork: #5c4a34;
+  --classroom-metal: #4a5262;
+  --classroom-plant: #3a6b46;
+  --classroom-plant-dark: #244a2e;
 }
 
 @layer base {
@@ -273,12 +313,19 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+    /* Anchor targets land below the floating nav instead of under it.
+       --nav-height is set by GlassNavbar's own height; 24px breathing room. */
+    scroll-padding-top: calc(var(--nav-height, 4rem) + 1.5rem);
   }
   h1,
   h2,
   h3,
   h4 {
     @apply font-heading;
+  }
+  :target {
+    scroll-margin-top: calc(var(--nav-height, 4rem) + 1.5rem);
   }
 }
 
