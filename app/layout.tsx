@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { MotionProvider } from "@/components/motion/MotionProvider";
+import { PageTransition } from "@/components/motion/PageTransition";
 import "./globals.css";
 
 const bodyFont = DM_Sans({
@@ -30,8 +32,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${bodyFont.variable} ${headingFont.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster />
+        <MotionProvider>
+          <PageTransition>{children}</PageTransition>
+          <Toaster />
+        </MotionProvider>
       </body>
     </html>
   );

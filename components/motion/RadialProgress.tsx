@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 interface RadialProgressProps {
@@ -60,7 +61,7 @@ export function RadialProgress({
             strokeDasharray={circumference}
             initial={reduceMotion ? false : { strokeDashoffset: circumference }}
             animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: duration.slow * 2, ease: ease.enter }}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold" aria-hidden="true">

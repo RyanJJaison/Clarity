@@ -1,47 +1,64 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { motion, useReducedMotion, type TargetAndTransition } from "motion/react";
 import type { ReactNode } from "react";
+import {
+  hierarchy,
+  revealVariants,
+  staggerContainer,
+  staggerItem,
+  viewport,
+  withDelay,
+  type HierarchyTier,
+  type RevealVariantName,
+} from "@/lib/motion";
 
 interface RevealProps {
   children: ReactNode;
-  delay?: number;
   className?: string;
+  /** Which entrance plays. Defaults to "fadeUp". */
+  variant?: RevealVariantName;
+  /** "mount" (default) plays once on mount; "scroll" plays when scrolled into view. */
+  trigger?: "mount" | "scroll";
+  /** Extra delay in seconds, stacked on top of `tier`. */
+  delay?: number;
+  /** Named hierarchy delay — background → content → primaryAction → secondaryElements. */
+  tier?: HierarchyTier;
+  /** Override the variant's default travel distance (px). Only applies to fadeUp/fadeDown. */
   y?: number;
 }
 
-/** Fade + rise on mount. Respects prefers-reduced-motion. */
-export function Reveal({ children, delay = 0, className, y = 16 }: RevealProps) {
+/**
+ * The general-purpose entrance primitive: fade in, fade up, fade down,
+ * slide in, or scale in — chosen via `variant` — triggered on mount or on
+ * scroll into view. Respects prefers-reduced-motion.
+ */
+export function Reveal({ children, className, variant = "fadeUp", trigger = "mount", delay = 0, tier, y }: RevealProps) {
   const reduceMotion = useReducedMotion();
+  const totalDelay = (tier ? hierarchy[tier] : 0) + delay;
+
+  let base = revealVariants[variant];
+  if (y !== undefined && "y" in (base.hidden as TargetAndTransition)) {
+    base = { ...base, hidden: { ...(base.hidden as TargetAndTransition), y } };
+  }
+  const resolved = withDelay(base, totalDelay);
+
+  const triggerProps =
+    trigger === "scroll"
+      ? { whileInView: "show" as const, viewport }
+      : { animate: "show" as const };
 
   return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { opacity: 0, y }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <motion.div className={className} initial={reduceMotion ? false : "hidden"} variants={resolved} {...triggerProps}>
       {children}
     </motion.div>
   );
 }
 
-const staggerContainer: Variants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
-  },
-};
-
-const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 16, scale: 0.97 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
-  },
-};
+/** Named alias of `<Reveal trigger="scroll">` for call-site clarity. */
+export function ScrollReveal(props: Omit<RevealProps, "trigger">) {
+  return <Reveal {...props} trigger="scroll" />;
+}
 
 /** Wraps a list of children and staggers their entrance. Use with <StaggerItem>. */
 export function StaggerGroup({ children, className }: { children: ReactNode; className?: string }) {
