@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { PageTransition } from "@/components/motion/PageTransition";
 import "./globals.css";
@@ -29,13 +30,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${bodyFont.variable} ${headingFont.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <MotionProvider>
-          <PageTransition>{children}</PageTransition>
-          <Toaster />
-        </MotionProvider>
+        <ThemeProvider>
+          <MotionProvider>
+            <PageTransition>{children}</PageTransition>
+            <Toaster />
+          </MotionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
