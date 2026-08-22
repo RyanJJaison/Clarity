@@ -3,8 +3,21 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PROTECTED_PREFIXES = ["/dashboard", "/onboarding", "/courses", "/tutor", "/exam", "/language", "/review"];
 
+const isProtected = (pathname: string) => PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
+
+  // No Supabase project configured yet: there can be no session, so let public
+  // pages render and bounce protected ones to /login instead of crashing.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (isProtected(request.nextUrl.pathname)) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,9 +40,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isProtected = PROTECTED_PREFIXES.some((prefix) => request.nextUrl.pathname.startsWith(prefix));
-
-  if (isProtected && !user) {
+  if (isProtected(request.nextUrl.pathname) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

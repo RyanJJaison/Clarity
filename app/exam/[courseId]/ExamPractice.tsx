@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuizCard, type QuizItem } from "@/components/QuizCard";
+import { RadialProgress } from "@/components/motion/RadialProgress";
+import { Reveal } from "@/components/motion/Reveal";
 import type { CourseOutline } from "@/types/db";
 
 interface Readiness {
@@ -59,17 +61,30 @@ export function ExamPractice({ courseId, outline }: { courseId: string; outline:
         <CardHeader>
           <CardTitle className="text-base">Readiness score</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+        <CardContent className="flex flex-col gap-4">
           {readiness ? (
-            <>
-              <p className="text-3xl font-semibold">{readiness.readinessScore}/100</p>
-              <p className="text-sm text-muted-foreground">{readiness.rationale}</p>
+            <Reveal className="flex flex-col gap-3">
+              <div className="flex items-center gap-4">
+                <RadialProgress
+                  value={readiness.readinessScore}
+                  size={80}
+                  label={`${readiness.readinessScore}`}
+                  colorClassName={
+                    readiness.readinessScore < 40
+                      ? "stroke-destructive"
+                      : readiness.readinessScore < 75
+                        ? "stroke-accent"
+                        : "stroke-primary"
+                  }
+                />
+                <p className="text-sm text-muted-foreground">{readiness.rationale}</p>
+              </div>
               {readiness.weakConcepts.length > 0 && (
                 <p className="text-sm">
                   Focus on: <span className="font-medium">{readiness.weakConcepts.join(", ")}</span>
                 </p>
               )}
-            </>
+            </Reveal>
           ) : (
             <p className="text-sm text-muted-foreground">Take a practice test, then check your readiness.</p>
           )}

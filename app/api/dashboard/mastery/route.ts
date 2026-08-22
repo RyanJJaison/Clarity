@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { computeStreak } from "@/lib/streak";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -37,18 +38,4 @@ export async function GET(req: NextRequest) {
   const streak = computeStreak((attempts ?? []).map((a) => a.created_at));
 
   return NextResponse.json({ mastery, dueCount: dueCount ?? 0, streak });
-}
-
-function computeStreak(timestamps: string[]): number {
-  if (timestamps.length === 0) return 0;
-  const days = new Set(timestamps.map((t) => t.slice(0, 10)));
-  let streak = 0;
-  const cursor = new Date();
-  for (;;) {
-    const key = cursor.toISOString().slice(0, 10);
-    if (!days.has(key)) break;
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
 }
