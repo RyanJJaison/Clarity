@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { streamComplete, MODELS } from "@/lib/anthropic";
 import { embed } from "@/lib/embeddings";
 import { formatContext, type RetrievedChunk } from "@/lib/rag";
-import { tutorChatSystemPrompt } from "@/lib/prompts/tutorChat";
+import { tutorChatSystemPrompt, type LearningMode } from "@/lib/prompts/tutorChat";
 
 const TOP_K = 5;
 
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const courseId: string | undefined = body.courseId;
   const messages: { role: "user" | "assistant"; content: string }[] = body.messages ?? [];
+  const mode: LearningMode | undefined = body.mode;
 
   if (!courseId || messages.length === 0) {
     return new Response("courseId and messages are required", { status: 400 });
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     courseTitle: course.title,
     level: course.proficiency_level ?? "intermediate",
     retrievedContext,
+    mode,
   });
 
   // Fire-and-forget persistence of the user's turn; doesn't block the stream.
