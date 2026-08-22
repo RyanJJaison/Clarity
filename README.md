@@ -116,28 +116,4 @@ types/db.ts                          # hand-written DB types — replace with `s
 | POST | `/api/exam/predict-readiness` | Readiness score from recent attempts |
 | POST | `/api/language/roleplay` | Streaming roleplay chat with inline correction |
 
-## What's MVP vs later
 
-MVP (built): paste/PDF ingestion, outline generation, streaming tutor chat, quiz
-generation + grading, SM-2 spaced repetition, rolling-accuracy difficulty, all three
-modes, mastery dashboard, email/password auth.
-
-Not yet built (Phase 2 / Stretch): URL and YouTube ingestion, OAuth, exam-date pacing
-plan, multiple courses per mode, retention charts over time, voice input, pronunciation
-feedback. Cut these first if time runs short.
-
-## Team
-
-2–4 people. Suggested split:
-- **Ingestion** — chunking/embeddings, DB schema, Supabase setup
-- **Tutor chat** — RAG + streaming, quiz generation, semantic grading
-- **Adaptive engine** — SRS + difficulty, Exam Prep mode, dashboard
-- **Language mode** — roleplay, UI polish, onboarding, demo prep
-
-## Deployment
-
-1. Push to GitHub (done).
-2. Import into [Vercel](https://vercel.com/new).
-3. Add all env vars from `.env.example` in the Vercel dashboard (not committed).
-4. Deploy, then verify the golden path end-to-end on the live URL: sign up → ingest →
-   generate course → chat → quiz → dashboard → review.
