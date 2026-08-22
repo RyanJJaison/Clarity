@@ -213,6 +213,14 @@
   --classroom-metal: #c7cdd6;
   --classroom-plant: #4f8a5b;
   --classroom-plant-dark: #386640;
+
+  /* AI Invigilator — a stylized illustrated person, not a mascot blob. */
+  --invigilator-skin: #eec8a3;
+  --invigilator-skin-shadow: #d9ab7d;
+  --invigilator-hair: #4a3323;
+  --invigilator-clothing: #5b4fc4;
+  --invigilator-clothing-shadow: #453aa0;
+  --invigilator-blush: #e8927c;
 }
 
 .dark {
@@ -302,6 +310,13 @@
   --classroom-metal: #4a5262;
   --classroom-plant: #3a6b46;
   --classroom-plant-dark: #244a2e;
+
+  --invigilator-skin: #e0b489;
+  --invigilator-skin-shadow: #c99669;
+  --invigilator-hair: #2a1d14;
+  --invigilator-clothing: #7c72e0;
+  --invigilator-clothing-shadow: #5f55b8;
+  --invigilator-blush: #e8927c;
 }
 
 @layer base {

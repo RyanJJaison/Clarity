@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { computeStreak } from "@/lib/streak";
 import {
+  buildContinueLearning,
   buildRecentActivity,
   buildRecommendations,
+  buildTodaysFocus,
   courseProgress,
   hasRecentActivity,
   mostActiveCourseId,
@@ -82,6 +84,10 @@ export default async function DashboardPage() {
     (a) => now.getTime() - new Date(a.created_at).getTime() < 30 * 24 * 60 * 60 * 1000
   );
 
+  const focusCourseProgress = focusCourse ? progress.get(focusCourse.id) ?? null : null;
+  const todaysFocus = buildTodaysFocus({ dueCount: dueCount ?? 0, focusCourse, focusCourseProgress });
+  const continueLearning = buildContinueLearning({ focusCourse, focusCourseProgress });
+
   return (
     <DashboardView
       mastery={mastery ?? []}
@@ -93,6 +99,8 @@ export default async function DashboardPage() {
       courseProgress={Object.fromEntries(progress)}
       focusCourse={focusCourse}
       quizAccuracy={quizAccuracy(last30Attempts)}
+      todaysFocus={todaysFocus}
+      continueLearning={continueLearning}
     />
   );
 }

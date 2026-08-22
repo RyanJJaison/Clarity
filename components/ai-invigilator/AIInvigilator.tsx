@@ -11,125 +11,194 @@ export type InvigilatorState =
   | "success"
   | "error";
 
-interface StateConfig {
-  /** Eye shape: normal, happy (curved closed), wide (attentive), soft (concerned). */
-  eyes: "normal" | "happy" | "wide" | "soft";
-  mouth: "smile" | "bigSmile" | "o" | "flat" | "open";
+interface FaceConfig {
+  eyebrows: "relaxed" | "raised" | "think" | "focused" | "concerned";
+  eyes: "open" | "happy" | "wide" | "narrow" | "soft";
+  mouth: "smile" | "bigSmile" | "pursed" | "flat" | "open";
   accent: "none" | "spark" | "dots" | "waves" | "ring" | "check";
 }
 
-const STATE_CONFIG: Record<InvigilatorState, StateConfig> = {
-  idle: { eyes: "normal", mouth: "smile", accent: "none" },
-  greeting: { eyes: "happy", mouth: "smile", accent: "spark" },
-  thinking: { eyes: "normal", mouth: "o", accent: "dots" },
-  listening: { eyes: "wide", mouth: "flat", accent: "waves" },
-  explaining: { eyes: "normal", mouth: "open", accent: "spark" },
-  celebrating: { eyes: "happy", mouth: "bigSmile", accent: "spark" },
-  focus: { eyes: "normal", mouth: "flat", accent: "ring" },
-  success: { eyes: "happy", mouth: "smile", accent: "check" },
-  error: { eyes: "soft", mouth: "flat", accent: "none" },
+const FACE: Record<InvigilatorState, FaceConfig> = {
+  idle: { eyebrows: "relaxed", eyes: "open", mouth: "smile", accent: "none" },
+  greeting: { eyebrows: "raised", eyes: "happy", mouth: "bigSmile", accent: "spark" },
+  thinking: { eyebrows: "think", eyes: "narrow", mouth: "pursed", accent: "dots" },
+  listening: { eyebrows: "raised", eyes: "wide", mouth: "flat", accent: "waves" },
+  explaining: { eyebrows: "relaxed", eyes: "open", mouth: "open", accent: "spark" },
+  celebrating: { eyebrows: "raised", eyes: "happy", mouth: "bigSmile", accent: "spark" },
+  focus: { eyebrows: "focused", eyes: "narrow", mouth: "flat", accent: "ring" },
+  success: { eyebrows: "relaxed", eyes: "happy", mouth: "smile", accent: "check" },
+  error: { eyebrows: "concerned", eyes: "soft", mouth: "flat", accent: "none" },
 };
+
+function Eyebrows({ variant }: { variant: FaceConfig["eyebrows"] }) {
+  const stroke = "var(--invigilator-hair)";
+  switch (variant) {
+    case "raised":
+      return (
+        <>
+          <path d="M32 33 Q37.5 29 43 32" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M57 32 Q62.5 29 68 33" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </>
+      );
+    case "think":
+      return (
+        <>
+          <path d="M32 34 Q37.5 31 43 33.5" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M57 31 Q62.5 27 68 30" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </>
+      );
+    case "focused":
+      return (
+        <>
+          <path d="M32 34.5 Q37.5 33 43 35" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M57 35 Q62.5 33 68 34.5" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </>
+      );
+    case "concerned":
+      return (
+        <>
+          <path d="M32 32 Q37.5 34.5 43 34" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M57 34 Q62.5 34.5 68 32" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </>
+      );
+    default:
+      return (
+        <>
+          <path d="M32 33.5 Q37.5 31 43 33" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M57 33 Q62.5 31 68 33.5" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </>
+      );
+  }
+}
+
+function Eye({ cx, variant }: { cx: number; variant: FaceConfig["eyes"] }) {
+  if (variant === "happy") {
+    return <path d={`M${cx - 5} 40 Q${cx} 35.5 ${cx + 5} 40`} stroke="var(--invigilator-hair)" strokeWidth="2.2" strokeLinecap="round" fill="none" />;
+  }
+  if (variant === "soft") {
+    return <path d={`M${cx - 5} 38.5 Q${cx} 41.5 ${cx + 5} 38.5`} stroke="var(--invigilator-hair)" strokeWidth="2.2" strokeLinecap="round" fill="none" />;
+  }
+  const ry = variant === "wide" ? 5.2 : variant === "narrow" ? 3.4 : 4.4;
+  return (
+    <g>
+      <ellipse cx={cx} cy="39" rx="4.6" ry={ry} fill="white" />
+      <circle cx={cx} cy="39.4" r="2.3" fill="var(--invigilator-hair)" />
+      <circle cx={cx + 0.8} cy="38.6" r="0.7" fill="white" />
+    </g>
+  );
+}
+
+function Mouth({ variant }: { variant: FaceConfig["mouth"] }) {
+  switch (variant) {
+    case "bigSmile":
+      return <path d="M42 55 Q50 62.5 58 55 Q50 60 42 55 Z" fill="var(--invigilator-blush)" opacity="0.85" />;
+    case "smile":
+      return <path d="M43 55 Q50 59 57 55" stroke="var(--invigilator-blush)" strokeWidth="2.6" strokeLinecap="round" fill="none" />;
+    case "pursed":
+      return <ellipse cx="50" cy="56" rx="2.6" ry="2" fill="var(--invigilator-blush)" opacity="0.85" />;
+    case "open":
+      return <ellipse cx="50" cy="56.5" rx="5" ry="4" fill="var(--invigilator-hair)" opacity="0.75" />;
+    default:
+      return <line x1="44" y1="56" x2="56" y2="56" stroke="var(--invigilator-blush)" strokeWidth="2.4" strokeLinecap="round" />;
+  }
+}
 
 interface AIInvigilatorProps {
   state?: InvigilatorState;
   size?: number;
   className?: string;
+  /** Fill the parent's width (e.g. a percentage-sized slot in the classroom scene) instead of a fixed pixel size. */
+  fluid?: boolean;
 }
 
 /**
- * Clarity's mascot: a supportive mentor, not a proctor. Deliberately
- * abstract/geometric rather than a realistic face — sophisticated without
- * reaching for photorealism or a cartoon-childish style. Idle motion
- * (float + blink) is pure CSS keyframes (see globals.css), not per-frame
- * React state, and is automatically neutralized under
- * prefers-reduced-motion by the same global rule every other animation
- * respects.
+ * Clarity's mascot: a calm, stylized-illustration teacher/companion — not a
+ * mascot blob, not a floating AI orb. Head + shoulders bust, soft flat-
+ * illustration shading, subtle facial expression per state. Idle motion
+ * (float + blink) is pure CSS keyframes (globals.css), not per-frame React
+ * state, and is automatically neutralized under prefers-reduced-motion by
+ * the same global rule every other animation respects.
  */
-export function AIInvigilator({ state = "idle", size = 96, className }: AIInvigilatorProps) {
-  const config = STATE_CONFIG[state];
+export function AIInvigilator({ state = "idle", size = 96, className, fluid = false }: AIInvigilatorProps) {
+  const face = FACE[state];
 
   return (
     <div
-      className={cn("inline-block", className)}
-      style={{ width: size, height: size, animation: "invigilator-float 4s ease-in-out infinite" }}
+      className={cn("inline-block aspect-[5/6]", fluid && "w-full", className)}
+      style={{ width: fluid ? undefined : size, animation: "invigilator-float 4s ease-in-out infinite" }}
       role="img"
-      aria-label={`Clarity AI assistant — ${state}`}
+      aria-label={`Clarity AI companion — ${state}`}
     >
-      <svg viewBox="0 0 96 96" fill="none" className="w-full h-full drop-shadow-lg">
+      <svg viewBox="0 0 100 120" fill="none" className="w-full h-full drop-shadow-lg">
         <defs>
-          <linearGradient id="invigilator-body" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--primitive-purple)" />
-            <stop offset="100%" stopColor="var(--primitive-cyan)" />
+          <linearGradient id="invigilator-skin-grad" x1="0.2" y1="0" x2="0.8" y2="1">
+            <stop offset="0%" stopColor="var(--invigilator-skin)" />
+            <stop offset="100%" stopColor="var(--invigilator-skin-shadow)" />
+          </linearGradient>
+          <linearGradient id="invigilator-clothing-grad" x1="0" y1="0" x2="0.3" y2="1">
+            <stop offset="0%" stopColor="var(--invigilator-clothing)" />
+            <stop offset="100%" stopColor="var(--invigilator-clothing-shadow)" />
           </linearGradient>
         </defs>
 
-        {config.accent === "ring" && (
-          <circle cx="48" cy="48" r="44" fill="none" stroke="var(--primitive-purple)" strokeWidth="2" opacity="0.35" />
+        {face.accent === "ring" && (
+          <circle cx="50" cy="55" r="47" fill="none" stroke="var(--primitive-purple)" strokeWidth="2" opacity="0.3" />
         )}
 
-        {/* Body */}
-        <rect x="12" y="14" width="72" height="68" rx="26" fill="url(#invigilator-body)" />
-        <rect x="12" y="14" width="72" height="68" rx="26" fill="white" opacity="0.06" />
+        {/* Shoulders / clothing */}
+        <path
+          d="M6 120 C6 98 22 82 50 82 C78 82 94 98 94 120 Z"
+          fill="url(#invigilator-clothing-grad)"
+        />
+        <path d="M42 84 Q50 90 58 84 L58 92 Q50 97 42 92 Z" fill="var(--invigilator-clothing-shadow)" opacity="0.7" />
 
-        {/* Eyes */}
-        <g style={{ transformOrigin: "48px 44px", animation: "invigilator-blink 5.5s ease-in-out infinite" }}>
-          {config.eyes === "happy" ? (
-            <>
-              <path d="M32 42 Q37 36 42 42" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-              <path d="M54 42 Q59 36 64 42" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-            </>
-          ) : config.eyes === "wide" ? (
-            <>
-              <circle cx="37" cy="42" r="5.5" fill="white" />
-              <circle cx="59" cy="42" r="5.5" fill="white" />
-            </>
-          ) : config.eyes === "soft" ? (
-            <>
-              <path d="M32 40 Q37 44 42 40" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-              <path d="M54 40 Q59 44 64 40" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-            </>
-          ) : (
-            <>
-              <circle cx="37" cy="42" r="4.5" fill="white" />
-              <circle cx="59" cy="42" r="4.5" fill="white" />
-            </>
-          )}
+        {/* Neck */}
+        <path d="M40 66 L40 84 Q50 90 60 84 L60 66 Z" fill="var(--invigilator-skin-shadow)" />
+
+        {/* Head */}
+        <ellipse cx="50" cy="42" rx="25" ry="27" fill="url(#invigilator-skin-grad)" />
+
+        {/* Blush */}
+        <ellipse cx="33" cy="49" rx="4.5" ry="3" fill="var(--invigilator-blush)" opacity="0.35" />
+        <ellipse cx="67" cy="49" rx="4.5" ry="3" fill="var(--invigilator-blush)" opacity="0.35" />
+
+        {/* Hair */}
+        <path
+          d="M24 40 C22 20 34 10 50 10 C66 10 78 20 76 40 C76 32 70 34 68 30 C64 34 58 26 50 26 C42 26 36 34 32 30 C30 34 24 32 24 40 Z"
+          fill="var(--invigilator-hair)"
+        />
+
+        <g style={{ transformOrigin: "50px 40px", animation: "invigilator-blink 5.5s ease-in-out infinite" }}>
+          <Eyebrows variant={face.eyebrows} />
+          <Eye cx={39} variant={face.eyes} />
+          <Eye cx={61} variant={face.eyes} />
         </g>
 
-        {/* Mouth */}
-        {config.mouth === "smile" && (
-          <path d="M38 58 Q48 65 58 58" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-        )}
-        {config.mouth === "bigSmile" && (
-          <path d="M34 56 Q48 70 62 56" stroke="white" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-        )}
-        {config.mouth === "o" && <circle cx="48" cy="60" r="5" fill="white" opacity="0.9" />}
-        {config.mouth === "flat" && <line x1="40" y1="59" x2="56" y2="59" stroke="white" strokeWidth="3.5" strokeLinecap="round" />}
-        {config.mouth === "open" && <rect x="41" y="55" width="14" height="10" rx="5" fill="white" opacity="0.9" />}
+        {/* Nose */}
+        <path d="M49 43 Q47.5 47 50 48.5" stroke="var(--invigilator-skin-shadow)" strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.7" />
+
+        <Mouth variant={face.mouth} />
 
         {/* Accent decoration */}
-        {config.accent === "spark" && (
-          <path
-            d="M78 18 L80 24 L86 26 L80 28 L78 34 L76 28 L70 26 L76 24 Z"
-            fill="var(--primitive-cyan)"
-          />
+        {face.accent === "spark" && (
+          <path d="M84 18 L86 24 L92 26 L86 28 L84 34 L82 28 L76 26 L82 24 Z" fill="var(--primitive-cyan)" />
         )}
-        {config.accent === "dots" && (
+        {face.accent === "dots" && (
           <>
-            <circle cx="68" cy="16" r="2.5" fill="var(--primitive-purple)" opacity="0.9" />
-            <circle cx="76" cy="12" r="2" fill="var(--primitive-purple)" opacity="0.6" />
-            <circle cx="82" cy="18" r="1.5" fill="var(--primitive-purple)" opacity="0.4" />
+            <circle cx="78" cy="16" r="2.3" fill="var(--primitive-purple)" opacity="0.9" />
+            <circle cx="85" cy="12" r="1.8" fill="var(--primitive-purple)" opacity="0.6" />
+            <circle cx="91" cy="17" r="1.3" fill="var(--primitive-purple)" opacity="0.4" />
           </>
         )}
-        {config.accent === "waves" && (
+        {face.accent === "waves" && (
           <>
-            <path d="M84 38 Q90 44 84 50" stroke="var(--primitive-cyan)" strokeWidth="2" fill="none" opacity="0.7" />
-            <path d="M88 34 Q96 44 88 54" stroke="var(--primitive-cyan)" strokeWidth="2" fill="none" opacity="0.4" />
+            <path d="M92 36 Q98 42 92 48" stroke="var(--primitive-cyan)" strokeWidth="2" fill="none" opacity="0.7" />
+            <path d="M96 32 Q104 42 96 52" stroke="var(--primitive-cyan)" strokeWidth="2" fill="none" opacity="0.4" />
           </>
         )}
-        {config.accent === "check" && (
-          <g transform="translate(70 12)">
-            <circle cx="8" cy="8" r="9" fill="var(--primitive-green)" />
+        {face.accent === "check" && (
+          <g transform="translate(78 10)">
+            <circle cx="8" cy="8" r="8.5" fill="var(--primitive-green)" />
             <path d="M4 8 L7 11 L12 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </g>
         )}

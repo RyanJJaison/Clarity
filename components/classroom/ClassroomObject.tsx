@@ -18,6 +18,14 @@ interface ClassroomObjectProps {
   /** Always show the caption instead of only on hover/focus (tablet/simplified mode). */
   alwaysShowLabel?: boolean;
   offset?: { x: MotionValue<number>; y: MotionValue<number> };
+  /**
+   * Real content rendered on top of the artwork (e.g. the actual "Today's
+   * Focus" task on the whiteboard). Positioned absolutely within the same
+   * box as the art — pass an inset className to place it. Purely visual;
+   * the accessible name still comes from `label`, which should describe
+   * this content too.
+   */
+  overlay?: ReactNode;
 }
 
 /**
@@ -36,6 +44,7 @@ export function ClassroomObject({
   className,
   alwaysShowLabel = false,
   offset,
+  overlay,
 }: ClassroomObjectProps) {
   const reduceMotion = useReducedMotion();
 
@@ -55,11 +64,12 @@ export function ClassroomObject({
         className="group/obj relative block focus-visible:outline-none"
       >
         <motion.div
-          className="rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="relative rounded-2xl focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           whileHover={reduceMotion ? undefined : cardHover}
           whileTap={reduceMotion ? undefined : pressScale}
         >
           {art}
+          {overlay}
         </motion.div>
         <span
           className={cn(

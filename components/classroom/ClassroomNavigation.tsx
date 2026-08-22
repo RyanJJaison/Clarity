@@ -11,10 +11,25 @@ import {
   NoticeBoardArt,
   CalendarArt,
   TrophyShelfArt,
+  ClockArt,
 } from "./artwork";
+
+export interface TodaysFocusSummary {
+  title: string;
+  detail: string; // e.g. "68% mastery" or "3 cards due"
+  href: string;
+}
+
+export interface ContinueLearningSummary {
+  title: string;
+  detail: string; // e.g. "Lesson 3 of 7 started"
+  href: string;
+}
 
 interface ClassroomNavigationProps {
   courses: CourseSummary[];
+  todaysFocus: TodaysFocusSummary | null;
+  continueLearning: ContinueLearningSummary | null;
   simplified?: boolean;
   offsets?: {
     midground: { x: MotionValue<number>; y: MotionValue<number> };
@@ -23,25 +38,42 @@ interface ClassroomNavigationProps {
 }
 
 /**
- * The seven classroom objects, positioned as a believable room and wired
- * to real destinations. Reuses nav-config's buildNavItems() (the same
- * source of truth as the navbar/mobile-nav/command palette) for
- * Learn/AI Tools/Assignments/Calendar/Achievements, so the classroom can
- * never link somewhere the rest of the app doesn't. Whiteboard/Desk point
- * at the dashboard's own Today's Focus / Continue Learning sections rather
- * than duplicating that logic here.
+ * The eight classroom objects, positioned as a believable room and wired to
+ * real destinations. Reuses nav-config's buildNavItems() (the same source
+ * of truth as the navbar/mobile-nav/command palette) for Learn/AI Tools/
+ * Assignments/Calendar/Achievements, so the classroom can't link somewhere
+ * the rest of the app doesn't. Whiteboard and Desk render the actual
+ * Today's Focus / Continue Learning content directly on the object —
+ * not a separate card floating elsewhere.
  */
-export function ClassroomNavigation({ courses, simplified = false, offsets }: ClassroomNavigationProps) {
+export function ClassroomNavigation({
+  courses,
+  todaysFocus,
+  continueLearning,
+  simplified = false,
+  offsets,
+}: ClassroomNavigationProps) {
   const nav = buildNavItems(courses);
   const byId = (id: string) => nav.find((n) => n.id === id)!;
-  const focusCourse = courses[0];
+
+  const overlayLabel = (title: string, detail: string) => (
+    <div className="absolute inset-x-[12%] top-[14%] text-left pointer-events-none">
+      <p className="text-[9px] sm:text-[10px] font-semibold text-white/70 uppercase tracking-wide truncate">
+        {title}
+      </p>
+      <p className="text-[10px] sm:text-xs font-semibold text-white truncate">{detail}</p>
+    </div>
+  );
 
   const objects = [
     {
       id: "whiteboard",
-      label: "Whiteboard — Today's Focus",
-      href: "#today-focus",
+      label: todaysFocus
+        ? `Whiteboard — Today's Focus: ${todaysFocus.title}, ${todaysFocus.detail}`
+        : "Whiteboard — Today's Focus",
+      href: todaysFocus?.href ?? "#today-focus",
       art: <WhiteboardArt className="w-full h-auto drop-shadow-lg" />,
+      overlay: todaysFocus ? overlayLabel("Today's focus", todaysFocus.title) : undefined,
       position: { left: "34%", top: "4%" },
       width: "28%",
       depth: "midground" as const,
@@ -57,9 +89,12 @@ export function ClassroomNavigation({ courses, simplified = false, offsets }: Cl
     },
     {
       id: "desk",
-      label: focusCourse ? `Desk — Continue ${focusCourse.title}` : "Desk — Start learning",
-      href: focusCourse ? `/courses/${focusCourse.id}` : "/courses/new",
+      label: continueLearning
+        ? `Desk — Continue Learning: ${continueLearning.title}, ${continueLearning.detail}`
+        : "Desk — Continue Learning",
+      href: continueLearning?.href ?? "/courses/new",
       art: <DeskArt className="w-full h-auto drop-shadow-lg" />,
+      overlay: continueLearning ? overlayLabel("Continue learning", continueLearning.title) : undefined,
       position: { left: "24%", top: "62%" },
       width: "38%",
       depth: "foreground" as const,
@@ -100,6 +135,15 @@ export function ClassroomNavigation({ courses, simplified = false, offsets }: Cl
       width: "18%",
       depth: "midground" as const,
     },
+    {
+      id: "clock",
+      label: "Clock — Focus Mode",
+      href: "/focus",
+      art: <ClockArt className="w-full h-auto drop-shadow-lg" />,
+      position: { left: "48%", top: "2%" },
+      width: "7%",
+      depth: "background" as const,
+    },
   ];
 
   return (
@@ -110,6 +154,7 @@ export function ClassroomNavigation({ courses, simplified = false, offsets }: Cl
           href={obj.href}
           label={obj.label}
           art={obj.art}
+          overlay={"overlay" in obj ? obj.overlay : undefined}
           position={obj.position}
           width={obj.width}
           alwaysShowLabel={simplified}

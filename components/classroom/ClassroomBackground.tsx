@@ -1,13 +1,12 @@
 "use client";
 
 import { motion, type MotionValue } from "motion/react";
-import { WindowArt, PlantArt, ClockArt } from "./artwork";
+import { WindowArt, PlantArt } from "./artwork";
 
 interface ClassroomBackgroundProps {
-  /** Tablet tier: drop the clock and one plant, keep wall/window/floor. */
+  /** Tablet tier: drop the second plant, keep wall/window/floor. */
   simplified?: boolean;
   offsets?: {
-    background: { x: MotionValue<number>; y: MotionValue<number> };
     midground: { x: MotionValue<number>; y: MotionValue<number> };
   };
 }
@@ -49,19 +48,9 @@ export function ClassroomBackground({ simplified = false, offsets }: ClassroomBa
       </motion.div>
 
       {!simplified && (
-        <>
-          {/* Clock — background depth, subtle */}
-          <motion.div
-            className="absolute left-1/2 top-[6%] w-[7%] max-w-16 -translate-x-1/2 drop-shadow"
-            style={offsets ? { x: offsets.background.x, y: offsets.background.y } : undefined}
-          >
-            <ClockArt className="w-full h-full" />
-          </motion.div>
-          {/* Plant — foreground-ish, bottom corner */}
-          <div className="absolute right-[3%] bottom-[2%] w-[10%] max-w-24">
-            <PlantArt className="w-full h-full" />
-          </div>
-        </>
+        <div className="absolute right-[3%] bottom-[2%] w-[10%] max-w-24">
+          <PlantArt className="w-full h-full" />
+        </div>
       )}
     </div>
   );

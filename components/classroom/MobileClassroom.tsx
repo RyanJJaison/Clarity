@@ -1,33 +1,60 @@
 import Link from "next/link";
+import { TimerIcon } from "lucide-react";
 import { buildNavItems, type CourseSummary } from "@/components/navigation/nav-config";
 import { HoverCard } from "@/components/motion/HoverCard";
 import { StaggerGroup, StaggerItem } from "@/components/motion/Reveal";
+import type { ContinueLearningSummary, TodaysFocusSummary } from "./ClassroomNavigation";
+
+interface MobileClassroomProps {
+  courses: CourseSummary[];
+  todaysFocus: TodaysFocusSummary | null;
+  continueLearning: ContinueLearningSummary | null;
+}
 
 /**
  * Mobile doesn't get the illustrated scene at all — not CSS-hidden, never
  * mounted (see useSceneTier). Just a lightweight atmospheric gradient wash
- * in the classroom palette, plus the same seven destinations as ordinary,
- * fully accessible cards. This is "atmosphere + standard navigation," not
- * a shrunk-down version of the desktop scene.
+ * in the classroom palette, plus the same eight destinations as ordinary,
+ * fully accessible cards — carrying the same real content the desktop
+ * whiteboard/desk show, not a generic label.
  */
-export function MobileClassroom({ courses }: { courses: CourseSummary[] }) {
+export function MobileClassroom({ courses, todaysFocus, continueLearning }: MobileClassroomProps) {
   const nav = buildNavItems(courses);
   const byId = (id: string) => nav.find((n) => n.id === id)!;
-  const focusCourse = courses[0];
 
   const items = [
-    { id: "whiteboard", label: "Today's Focus", href: "#today-focus", icon: byId("progress").icon },
-    { id: "bookshelf", label: "Subjects", href: byId("learn").href, icon: byId("learn").icon },
+    {
+      id: "whiteboard",
+      label: "Today's Focus",
+      detail: todaysFocus?.title,
+      href: todaysFocus?.href ?? "#today-focus",
+      icon: byId("progress").icon,
+    },
+    { id: "bookshelf", label: "Subjects", detail: undefined, href: byId("learn").href, icon: byId("learn").icon },
     {
       id: "desk",
       label: "Continue Learning",
-      href: focusCourse ? `/courses/${focusCourse.id}` : "/courses/new",
+      detail: continueLearning?.title,
+      href: continueLearning?.href ?? "/courses/new",
       icon: byId("learn").icon,
     },
-    { id: "computer", label: "AI Tools", href: byId("ai-tools").href, icon: byId("ai-tools").icon },
-    { id: "noticeboard", label: "Assignments", href: byId("assignments").href, icon: byId("assignments").icon },
-    { id: "calendar", label: "Schedule", href: byId("calendar").href, icon: byId("calendar").icon },
-    { id: "trophyshelf", label: "Achievements", href: byId("achievements").href, icon: byId("achievements").icon },
+    { id: "computer", label: "AI Tools", detail: undefined, href: byId("ai-tools").href, icon: byId("ai-tools").icon },
+    {
+      id: "noticeboard",
+      label: "Assignments",
+      detail: undefined,
+      href: byId("assignments").href,
+      icon: byId("assignments").icon,
+    },
+    { id: "calendar", label: "Schedule", detail: undefined, href: byId("calendar").href, icon: byId("calendar").icon },
+    {
+      id: "trophyshelf",
+      label: "Achievements",
+      detail: undefined,
+      href: byId("achievements").href,
+      icon: byId("achievements").icon,
+    },
+    { id: "clock", label: "Focus Mode", detail: undefined, href: "/focus", icon: TimerIcon },
   ];
 
   return (
@@ -58,6 +85,7 @@ export function MobileClassroom({ courses }: { courses: CourseSummary[] }) {
               >
                 <item.icon className="size-5 text-primary" aria-hidden="true" />
                 <span className="text-sm font-medium">{item.label}</span>
+                {item.detail && <span className="text-xs text-muted-foreground truncate w-full">{item.detail}</span>}
               </Link>
             </HoverCard>
           </StaggerItem>

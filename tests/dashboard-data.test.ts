@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildContinueLearning,
   buildRecentActivity,
   buildRecommendations,
+  buildTodaysFocus,
   courseProgress,
   hasRecentActivity,
   mostActiveCourseId,
@@ -120,5 +122,54 @@ describe("quizAccuracy", () => {
 
   it("computes a rounded percentage", () => {
     expect(quizAccuracy([{ correct: true }, { correct: true }, { correct: false }])).toBe(67);
+  });
+});
+
+describe("buildTodaysFocus", () => {
+  it("prioritizes due cards over everything else", () => {
+    const result = buildTodaysFocus({
+      dueCount: 3,
+      focusCourse: { id: "c1", title: "Physics", mode: "general" },
+      focusCourseProgress: 0.5,
+    });
+    expect(result.href).toBe("/review");
+    expect(result.title).toContain("3 due card");
+  });
+
+  it("falls back to continuing the focus course when nothing is due", () => {
+    const result = buildTodaysFocus({
+      dueCount: 0,
+      focusCourse: { id: "c1", title: "Physics", mode: "general" },
+      focusCourseProgress: 0.68,
+    });
+    expect(result.href).toBe("/courses/c1");
+    expect(result.detail).toBe("68% mastery");
+  });
+
+  it("suggests starting a course with no courses and nothing due", () => {
+    const result = buildTodaysFocus({ dueCount: 0, focusCourse: null, focusCourseProgress: null });
+    expect(result.href).toBe("/courses/new");
+  });
+});
+
+describe("buildContinueLearning", () => {
+  it("returns null with no focus course", () => {
+    expect(buildContinueLearning({ focusCourse: null, focusCourseProgress: null })).toBeNull();
+  });
+
+  it("shows real progress, not a fabricated percentage", () => {
+    const result = buildContinueLearning({
+      focusCourse: { id: "c1", title: "Physics", mode: "general" },
+      focusCourseProgress: 0.42,
+    });
+    expect(result?.detail).toBe("42% mastery");
+  });
+
+  it("says 'just started' rather than 0% when nothing's been attempted", () => {
+    const result = buildContinueLearning({
+      focusCourse: { id: "c1", title: "Physics", mode: "general" },
+      focusCourseProgress: null,
+    });
+    expect(result?.detail).toBe("Just started");
   });
 });

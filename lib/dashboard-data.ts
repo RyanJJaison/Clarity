@@ -163,3 +163,51 @@ export function quizAccuracy(attempts: { correct: boolean }[]): number | null {
   const correct = attempts.filter((a) => a.correct).length;
   return Math.round((correct / attempts.length) * 100);
 }
+
+export interface ObjectiveSummary {
+  title: string;
+  detail: string;
+  href: string;
+}
+
+/** What the whiteboard shows — the single most important next action, from real signals only. */
+export function buildTodaysFocus(params: {
+  dueCount: number;
+  focusCourse: CourseRow | null;
+  focusCourseProgress: number | null;
+}): ObjectiveSummary {
+  const { dueCount, focusCourse, focusCourseProgress } = params;
+
+  if (dueCount > 0) {
+    return {
+      title: `Review ${dueCount} due card${dueCount === 1 ? "" : "s"}`,
+      detail: "Scheduled for today",
+      href: "/review",
+    };
+  }
+
+  if (focusCourse) {
+    return {
+      title: `Continue ${focusCourse.title}`,
+      detail: focusCourseProgress !== null ? `${Math.round(focusCourseProgress * 100)}% mastery` : "Not started yet",
+      href: `/courses/${focusCourse.id}`,
+    };
+  }
+
+  return { title: "Start your first course", detail: "Paste text or upload a PDF", href: "/courses/new" };
+}
+
+/** What the desk shows — real progress, never a fabricated completion percentage. */
+export function buildContinueLearning(params: {
+  focusCourse: CourseRow | null;
+  focusCourseProgress: number | null;
+}): ObjectiveSummary | null {
+  const { focusCourse, focusCourseProgress } = params;
+  if (!focusCourse) return null;
+
+  return {
+    title: focusCourse.title,
+    detail: focusCourseProgress !== null ? `${Math.round(focusCourseProgress * 100)}% mastery` : "Just started",
+    href: `/courses/${focusCourse.id}`,
+  };
+}
