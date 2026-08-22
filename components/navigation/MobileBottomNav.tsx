@@ -1,20 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "motion/react";
+import { LogOutIcon } from "lucide-react";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase/client";
 import type { NavItem } from "./nav-config";
+
+function initials(email: string) {
+  return email.split("@")[0].slice(0, 2).toUpperCase();
+}
 
 /**
  * Fixed bottom navigation for phones (below md — the GlassNavbar handles
  * everything at md and up). Respects iOS/Android safe areas and keeps
- * touch targets at a comfortable ≥44px.
+ * touch targets at a comfortable ≥44px. Home/Learn/AI/Progress are real
+ * routes; Profile is a menu (same content as the desktop dropdown) rather
+ * than a dead link, since there's no dedicated /profile page.
  */
-export function MobileBottomNav({ items }: { items: NavItem[] }) {
+export function MobileBottomNav({ items, user }: { items: NavItem[]; user: { email: string } }) {
   const pathname = usePathname();
+  const router = useRouter();
   const mobileItems = items.filter((i) => i.mobile);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <nav
@@ -48,6 +73,29 @@ export function MobileBottomNav({ items }: { items: NavItem[] }) {
             </li>
           );
         })}
+        <li className="flex-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="w-full flex flex-col items-center justify-center gap-0.5 py-2 min-h-11 text-[0.6875rem] font-medium text-muted-foreground"
+              >
+                <Avatar className="size-5">
+                  <AvatarFallback className="text-[0.5rem]">{initials(user.email)}</AvatarFallback>
+                </Avatar>
+                <span>Profile</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="top">
+              <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut}>
+                <LogOutIcon className="size-4" aria-hidden="true" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </li>
       </ul>
     </nav>
   );

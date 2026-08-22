@@ -19,7 +19,7 @@ export function AppShell({ children, user, courses }: AppShellProps) {
     <div className="flex-1 flex flex-col min-h-full">
       <AppNavbar variant="app" items={items} user={user} onOpenCommandPalette={openCommandPalette} />
       <div className="flex-1 flex flex-col pb-16 md:pb-0">{children}</div>
-      <MobileBottomNav items={items} />
+      <MobileBottomNav items={items} user={user} />
       <CommandPalette courses={courses} />
     </div>
   );
