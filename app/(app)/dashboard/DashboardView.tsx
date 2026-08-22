@@ -21,6 +21,7 @@ import { RecommendationCard } from "@/components/cards/RecommendationCard";
 import { ProgressCard } from "@/components/cards/ProgressCard";
 import { AIToolCard } from "@/components/cards/AIToolCard";
 import { ClassroomScene } from "@/components/classroom/ClassroomScene";
+import { DashboardGreeting } from "@/components/ai-invigilator/DashboardGreeting";
 import type { ActivityItem, Recommendation } from "@/lib/dashboard-data";
 
 export interface CourseRow {
@@ -95,6 +96,8 @@ export function DashboardView({
           </Button>
         </div>
       </Reveal>
+
+      <DashboardGreeting subject={focusCourse?.title} todaysFocusHref="#today-focus" />
 
       <ClassroomScene courses={courses} />
 

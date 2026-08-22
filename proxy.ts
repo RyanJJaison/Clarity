@@ -12,6 +12,7 @@ const PROTECTED_PREFIXES = [
   "/assignments",
   "/schedule",
   "/achievements",
+  "/focus",
 ];
 
 const isProtected = (pathname: string) => PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
