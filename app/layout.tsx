@@ -1,33 +1,29 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Instrument_Serif, Inter, Outfit } from "next/font/google";
+import { DM_Mono, DM_Sans, Playfair_Display } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { PageTransition } from "@/components/motion/PageTransition";
 import "./globals.css";
 
-const bodyFont = Inter({
+const bodyFont = DM_Sans({
   variable: "--font-body",
   subsets: ["latin"],
 });
 
-const headingFont = Outfit({
+// Also backs the whiteboard "lesson title" editorial/italic treatment —
+// see --font-editorial in globals.css, which points at this same variable.
+const headingFont = Playfair_Display({
   variable: "--font-heading",
   subsets: ["latin"],
-});
-
-// Editorial accent — the whiteboard "lesson title" treatment, not a
-// general-purpose heading font. Regular + Italic only (all this face ships).
-const editorialFont = Instrument_Serif({
-  variable: "--font-editorial",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "600"],
   style: ["normal", "italic"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = DM_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bodyFont.variable} ${headingFont.variable} ${editorialFont.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${bodyFont.variable} ${headingFont.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>

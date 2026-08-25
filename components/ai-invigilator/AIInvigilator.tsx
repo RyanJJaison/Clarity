@@ -109,6 +109,8 @@ interface AIInvigilatorProps {
   className?: string;
   /** Fill the parent's width (e.g. a percentage-sized slot in the classroom scene) instead of a fixed pixel size. */
   fluid?: boolean;
+  /** Opt out of CSS idle float when a parent drives motion via Motion. */
+  animateIdle?: boolean;
 }
 
 /**
@@ -119,13 +121,13 @@ interface AIInvigilatorProps {
  * state, and is automatically neutralized under prefers-reduced-motion by
  * the same global rule every other animation respects.
  */
-export function AIInvigilator({ state = "idle", size = 96, className, fluid = false }: AIInvigilatorProps) {
+export function AIInvigilator({ state = "idle", size = 96, className, fluid = false, animateIdle = true }: AIInvigilatorProps) {
   const face = FACE[state];
 
   return (
     <div
       className={cn("inline-block aspect-[5/6]", fluid && "w-full", className)}
-      style={{ width: fluid ? undefined : size, animation: "invigilator-float 4s ease-in-out infinite" }}
+      style={{ width: fluid ? undefined : size, animation: animateIdle ? "invigilator-float 4s ease-in-out infinite" : undefined }}
       role="img"
       aria-label={`Clarity AI companion — ${state}`}
     >

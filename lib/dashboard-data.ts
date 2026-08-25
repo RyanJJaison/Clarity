@@ -203,6 +203,39 @@ export function buildTodaysFocus(params: {
   return { title: "Start your first course", detail: "Paste text or upload a PDF", href: "/courses/new" };
 }
 
+export interface DeadlineCourseRow {
+  id: string;
+  title: string;
+  exam_date: string | null;
+}
+
+export interface Deadline {
+  courseId: string;
+  title: string;
+  examDate: string;
+  /** Can be negative (past due) or 0 (today) — callers decide how to word that, nothing is clamped here. */
+  daysRemaining: number;
+  /** Average mastery across the course's tracked concepts, or null if nothing's been attempted. */
+  masteryPercent: number | null;
+}
+
+/** Courses with a real exam/deadline date set, soonest first — nothing invented for courses without one. */
+export function buildUpcomingDeadlines(courses: DeadlineCourseRow[], progress: Map<string, number>, now: Date): Deadline[] {
+  return courses
+    .filter((c): c is DeadlineCourseRow & { exam_date: string } => c.exam_date !== null)
+    .map((c) => {
+      const score = progress.get(c.id);
+      return {
+        courseId: c.id,
+        title: c.title,
+        examDate: c.exam_date,
+        daysRemaining: Math.ceil((new Date(c.exam_date).getTime() - now.getTime()) / 86_400_000),
+        masteryPercent: score !== undefined ? Math.round(score * 100) : null,
+      };
+    })
+    .sort((a, b) => a.daysRemaining - b.daysRemaining);
+}
+
 /** What the desk shows — real progress, never a fabricated completion percentage. */
 export function buildContinueLearning(params: {
   focusCourse: CourseRow | null;

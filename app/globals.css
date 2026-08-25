@@ -23,7 +23,8 @@
   --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading);
-  --font-editorial: var(--font-editorial);
+  /* Same Playfair Display family as --font-heading — see app/layout.tsx. */
+  --font-editorial: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -99,24 +100,24 @@
 
 :root {
   /* --------------------------------------------------------------------
-   * Brand & neutral primitives (light theme) — matches the finalized
-   * Figma classroom-dashboard design (fileKey cLsuVYh56ZKWNWYUGSeOSv):
-   * warm cream background, indigo primary, cyan accent, navy/slate text.
-   * "primitive-purple" is the primary brand slot's variable name (kept
-   * from before the Figma migration so downstream var(--primitive-purple)
-   * references didn't all need renaming) — it now holds an indigo value,
-   * not purple.
+   * Brand & neutral primitives (light theme) — warm sage/rust/cream
+   * palette, matching the "Manus" reference build's classroom dashboard
+   * (clarity-study-platform: client/src/index.css). Variable names are
+   * kept from the earlier Figma-indigo palette so downstream
+   * var(--primitive-purple) etc. references didn't all need renaming —
+   * "primitive-purple" now holds sage green, "primitive-cyan" now holds
+   * rust/terracotta, not their literal namesakes.
    * -------------------------------------------------------------------- */
-  --primitive-warm-off-white: #faf6ee;
-  --primitive-soft-cream: #f5f0e6;
-  --primitive-charcoal: #1b2a4a;
-  --primitive-muted-blue: #3a4f7c;
-  --primitive-indigo: #4f46e5;
-  --primitive-purple: #6366f1;
-  --primitive-cyan: #06b6d4;
-  --primitive-green: #2f9e5b;
-  --primitive-amber: #d97706;
-  --primitive-red: #dc2626;
+  --primitive-warm-off-white: #f5f1eb;
+  --primitive-soft-cream: #ebe5dc;
+  --primitive-charcoal: #302d28;
+  --primitive-muted-blue: #8c8175;
+  --primitive-indigo: #4d6153;
+  --primitive-purple: #3e4c43;
+  --primitive-cyan: #bd7553;
+  --primitive-green: #799477;
+  --primitive-amber: #c5a060;
+  --primitive-red: #b8452e;
 
   /* Base background/surfaces */
   --background: var(--primitive-warm-off-white);
@@ -130,7 +131,7 @@
      maps to the `subtle` Tailwind color slot (see @theme inline comment above). */
   --text-primary: var(--primitive-charcoal);
   --text-secondary: var(--primitive-muted-blue);
-  --text-muted: #7186a3;
+  --text-muted: #a89c8c;
 
   /* shadcn-required tokens, sourced from the primitives above */
   --foreground: var(--text-primary);
@@ -142,12 +143,12 @@
   --primary-foreground: #ffffff;
   --secondary: var(--primitive-indigo);
   --secondary-foreground: #ffffff;
-  --muted: #e2e8f0;
+  --muted: #e4ddd2;
   --muted-foreground: var(--text-muted);
   --accent: var(--primitive-cyan);
   --accent-foreground: #ffffff;
   --destructive: var(--primitive-red);
-  --border: #e2e0d5;
+  --border: #e2dccf;
   --input: #e6e0d2;
   --ring: var(--primitive-purple);
 
@@ -159,12 +160,12 @@
   --error: var(--primitive-red);
   --error-foreground: #ffffff;
 
-  /* Data viz — purple / cyan / indigo / muted-blue / light purple */
+  /* Data viz — sage / rust / muted sage / warm taupe / soft gold */
   --chart-1: var(--primitive-purple);
   --chart-2: var(--primitive-cyan);
   --chart-3: var(--primitive-indigo);
   --chart-4: var(--primitive-muted-blue);
-  --chart-5: #c4b5fd;
+  --chart-5: #e0c9a6;
 
   --radius: 0.75rem;
 
@@ -229,27 +230,27 @@
 }
 
 .dark {
-  --primitive-warm-off-white: #f3eee4;
+  --primitive-warm-off-white: #f0ebe1;
   --primitive-soft-cream: #f5f0e6;
-  --primitive-charcoal: #171b26;
-  --primitive-muted-blue: #7fa0c4;
-  --primitive-indigo: #a5b4fc;
-  --primitive-purple: #818cf8;
-  --primitive-cyan: #22d3ee;
-  --primitive-green: #4ade80;
-  --primitive-amber: #fbbf24;
-  --primitive-red: #f87171;
+  --primitive-charcoal: #201c17;
+  --primitive-muted-blue: #b8ab9b;
+  --primitive-indigo: #8fa798;
+  --primitive-purple: #7c9686;
+  --primitive-cyan: #d99872;
+  --primitive-green: #8fae8a;
+  --primitive-amber: #dbb877;
+  --primitive-red: #d97862;
 
-  --background: #0b0f1e; /* deep navy */
+  --background: #1c1a17; /* warm charcoal-brown, not navy — matches the sage/rust palette */
   --surface: var(--primitive-charcoal);
-  --surface-elevated: #1f2433;
+  --surface-elevated: #2a251f;
   --surface-glass: color-mix(in oklch, var(--surface-elevated) 55%, transparent);
   --glass-border: color-mix(in oklch, #ffffff 12%, transparent);
   --glass-blur: 12px;
 
   --text-primary: var(--primitive-warm-off-white);
-  --text-secondary: #a8b4d1;
-  --text-muted: #838ba0;
+  --text-secondary: #c2b6a5;
+  --text-muted: #948877;
 
   --foreground: var(--text-primary);
   --card: var(--surface);
@@ -257,13 +258,13 @@
   --popover: var(--surface-elevated);
   --popover-foreground: var(--text-primary);
   --primary: var(--primitive-purple);
-  --primary-foreground: #1e1b4b;
+  --primary-foreground: #16201a;
   --secondary: var(--primitive-indigo);
-  --secondary-foreground: #0b0f1e;
-  --muted: #242a3a;
+  --secondary-foreground: #16201a;
+  --muted: #332e27;
   --muted-foreground: var(--text-muted);
   --accent: var(--primitive-cyan);
-  --accent-foreground: #062229;
+  --accent-foreground: #2a1710;
   --destructive: var(--primitive-red);
   --border: color-mix(in oklch, #ffffff 10%, transparent);
   --input: color-mix(in oklch, #ffffff 12%, transparent);
@@ -280,19 +281,19 @@
   --chart-2: var(--primitive-cyan);
   --chart-3: var(--primitive-indigo);
   --chart-4: var(--primitive-muted-blue);
-  --chart-5: #c4b5fd;
+  --chart-5: #d4b896;
 
   --sidebar: var(--surface);
   --sidebar-foreground: var(--text-primary);
   --sidebar-primary: var(--primitive-purple);
-  --sidebar-primary-foreground: #1e1b4b;
+  --sidebar-primary-foreground: #16201a;
   --sidebar-accent: var(--muted);
   --sidebar-accent-foreground: var(--text-primary);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--primitive-purple);
 
   /* Dark surfaces need deeper shadows plus a faint brand-tinted glow —
-     flat black shadows barely read against a navy background. */
+     flat black shadows barely read against a warm charcoal background. */
   --shadow-xs-value: 0 1px 2px 0 rgb(0 0 0 / 0.2);
   --shadow-sm-value: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.24);
   --shadow-md-value: 0 4px 10px -2px rgb(0 0 0 / 0.36), 0 2px 4px -2px rgb(0 0 0 / 0.24);

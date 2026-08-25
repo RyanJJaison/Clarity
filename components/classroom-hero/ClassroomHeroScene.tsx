@@ -14,7 +14,7 @@ import { ActiveSubjectPanel } from "./ActiveSubjectPanel";
 import { AskClarityBar } from "./AskClarityBar";
 import { InteractiveHotspot } from "./InteractiveHotspot";
 import { InteractiveBook } from "./InteractiveBook";
-import { InvigilatorHotspot } from "./InvigilatorHotspot";
+import { Invigilator } from "./Invigilator";
 import { GlowRegion } from "./GlowRegion";
 import { AmbientLayer, type LightingMood } from "./AmbientLayer";
 import { EasterEggMessage } from "./EasterEggMessage";
@@ -163,7 +163,7 @@ export function ClassroomHeroScene({
       ))}
 
       {/* Invigilator — Section 8, the most important interactive character */}
-      <InvigilatorHotspot position={INVIGILATOR_RECT} focusCourse={focusCourse} todaysFocusHref={todaysFocus.href} />
+      <Invigilator position={INVIGILATOR_RECT} focusCourse={focusCourse} />
 
       <EasterEggMessage message={eggMessage} position={{ left: "50%", top: "90%" }} />
     </div>

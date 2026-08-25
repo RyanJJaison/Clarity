@@ -4,6 +4,7 @@ import {
   buildRecentActivity,
   buildRecommendations,
   buildTodaysFocus,
+  buildUpcomingDeadlines,
   courseProgress,
   hasRecentActivity,
   mostActiveCourseId,
@@ -186,5 +187,40 @@ describe("buildContinueLearning", () => {
       focusCourseProgress: null,
     });
     expect(result?.detail).toBe("Just started");
+  });
+});
+
+describe("buildUpcomingDeadlines", () => {
+  const now = new Date("2026-09-08T00:00:00Z");
+
+  it("excludes courses with no exam date — nothing invented", () => {
+    const courses = [{ id: "c1", title: "No deadline", exam_date: null }];
+    expect(buildUpcomingDeadlines(courses, new Map(), now)).toHaveLength(0);
+  });
+
+  it("sorts soonest first regardless of input order", () => {
+    const courses = [
+      { id: "c1", title: "Later", exam_date: "2026-10-01" },
+      { id: "c2", title: "Sooner", exam_date: "2026-09-10" },
+    ];
+    const result = buildUpcomingDeadlines(courses, new Map(), now);
+    expect(result.map((d) => d.courseId)).toEqual(["c2", "c1"]);
+  });
+
+  it("does not clamp a past date to zero — callers need to distinguish overdue from today", () => {
+    const courses = [{ id: "c1", title: "Overdue", exam_date: "2026-09-01" }];
+    const result = buildUpcomingDeadlines(courses, new Map(), now);
+    expect(result[0].daysRemaining).toBeLessThan(0);
+  });
+
+  it("carries real mastery percent when available, null otherwise", () => {
+    const courses = [
+      { id: "c1", title: "Attempted", exam_date: "2026-09-20" },
+      { id: "c2", title: "Untouched", exam_date: "2026-09-25" },
+    ];
+    const progress = new Map([["c1", 0.73]]);
+    const result = buildUpcomingDeadlines(courses, progress, now);
+    expect(result.find((d) => d.courseId === "c1")?.masteryPercent).toBe(73);
+    expect(result.find((d) => d.courseId === "c2")?.masteryPercent).toBeNull();
   });
 });

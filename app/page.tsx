@@ -2,7 +2,22 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/Reveal";
 import { AppNavbar } from "@/components/navigation/AppNavbar";
-import { ClassroomPreview } from "@/components/classroom/ClassroomPreview";
+import { ClassroomHeroScene } from "@/components/classroom-hero/ClassroomHeroScene";
+import type { CourseSummary } from "@/components/navigation/nav-config";
+
+// Illustrative-only: a signed-out visitor has no real courses or progress yet,
+// so the hero shows a representative demo scene (matching the Figma mockup's
+// own sample numbers) rather than the "start your first course" empty state.
+const SAMPLE_COURSES: CourseSummary[] = [
+  { id: "sample-history", title: "Modern European History", mode: "history" },
+  { id: "sample-chem", title: "Organic Chemistry", mode: "chemistry" },
+  { id: "sample-spanish", title: "Spanish B2", mode: "language" },
+  { id: "sample-law", title: "Contract Law", mode: "law" },
+  { id: "sample-bio", title: "Cell Biology", mode: "biology" },
+  { id: "sample-econ", title: "Macroeconomics", mode: "economics" },
+];
+const SAMPLE_FOCUS_COURSE = SAMPLE_COURSES[0];
+const SAMPLE_FOCUS_PROGRESS = 0.65;
 
 export default function Home() {
   return (
@@ -37,8 +52,17 @@ export default function Home() {
           </Reveal>
         </section>
 
-        <Reveal delay={0.25} className="relative max-w-5xl mx-auto w-full px-6 pb-24">
-          <ClassroomPreview />
+        <Reveal delay={0.25} className="relative max-w-6xl mx-auto w-full px-6 pb-24">
+          <ClassroomHeroScene
+            email="alex@example.com"
+            courses={SAMPLE_COURSES}
+            todaysFocus={{ title: `Continue ${SAMPLE_FOCUS_COURSE.title}`, detail: "65% mastery", href: "/signup" }}
+            continueLearning={{ title: SAMPLE_FOCUS_COURSE.title, detail: "65% mastery", href: "/signup" }}
+            focusCourse={SAMPLE_FOCUS_COURSE}
+            focusCourseProgress={SAMPLE_FOCUS_PROGRESS}
+            streak={12}
+            dueCount={4}
+          />
         </Reveal>
       </main>
     </div>

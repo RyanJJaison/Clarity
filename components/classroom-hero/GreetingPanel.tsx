@@ -24,12 +24,12 @@ export function GreetingPanel({ email, now = new Date() }: { email: string; now?
     <GlassPanel className="flex flex-col gap-1 p-[18px]">
       <div className="flex items-center gap-2">
         <span className="size-3 rounded-full bg-primary" aria-hidden="true" />
-        <span className="font-heading text-xl font-extrabold">Clarity</span>
-        <Badge variant="secondary" className="text-[10px] font-bold uppercase text-primary bg-primary/10">
+        <span className="font-heading text-[22px] font-extrabold">Clarity</span>
+        <Badge variant="secondary" className="text-[10px] font-bold uppercase text-primary bg-primary/12">
           AI Space
         </Badge>
       </div>
-      <p className="text-[15px] text-subtle">
+      <p className="text-[15px] font-medium text-subtle">
         {greeting}
         {name ? `, ${name}` : ""}. Ready to explore?
       </p>

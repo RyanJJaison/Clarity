@@ -81,7 +81,7 @@ export function buildNavItems(courses: CourseSummary[]): NavItem[] {
       label: "Assignments",
       href: "/assignments",
       icon: ClipboardListIcon,
-      description: "Upcoming and completed assignments",
+      description: "Exam and deadline dates for your courses",
     },
     {
       id: "calendar",
