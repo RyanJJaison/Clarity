@@ -6,6 +6,10 @@ import { formatContext, type RetrievedChunk } from "@/lib/rag";
 import { tutorChatSystemPrompt, type LearningMode } from "@/lib/prompts/tutorChat";
 
 const TOP_K = 5;
+// How many results each retrieval arm contributes to the fusion before the top
+// TOP_K are taken. Wider than TOP_K so a chunk ranked poorly by one arm can
+// still be rescued by the other.
+const CANDIDATE_COUNT = 20;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -86,10 +90,15 @@ async function retrieveContext(
   if (!sourceId) return "(no source material attached to this course)";
 
   const [queryEmbedding] = await embed([query]);
-  const { data, error } = await supabase.rpc("match_content_chunks", {
+  // Hybrid (vector + full-text, RRF-fused) retrieval. The raw query text is
+  // passed alongside the embedding so the keyword arm can match exact terms the
+  // embedding alone tends to blur.
+  const { data, error } = await supabase.rpc("match_content_chunks_hybrid", {
     query_embedding: queryEmbedding,
+    query_text: query,
     match_source_id: sourceId,
     match_count: TOP_K,
+    candidate_count: CANDIDATE_COUNT,
   });
 
   if (error || !data) return "(context retrieval unavailable)";

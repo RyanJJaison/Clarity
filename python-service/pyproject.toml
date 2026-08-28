@@ -1,0 +1,27 @@
+[project]
+name = "clarity-retrieval-service"
+version = "0.1.0"
+description = "Chunking, hybrid retrieval, and cross-encoder re-ranking for Clarity's RAG pipeline"
+requires-python = ">=3.11"
+
+# Core runtime + test dependencies. Deliberately light: the whole test suite
+# runs on just these, with no model download and no API keys.
+dependencies = [
+    "fastapi>=0.115",
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+# Only needed to actually train or serve the cross-encoder. Heavy (pulls torch),
+# and not required by the tests.
+reranker = ["sentence-transformers>=3.0"]
+# Only needed to generate synthetic training data.
+training = ["google-genai>=0.3"]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+pythonpath = ["."]
+addopts = "-q"
